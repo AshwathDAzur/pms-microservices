@@ -1,0 +1,36 @@
+# =========================
+# 1️⃣ Build Stage
+# =========================
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies (cached layer)
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy source
+COPY . .
+
+# Build the Vite app
+RUN npm run build
+
+
+# =========================
+# 2️⃣ Runtime Stage
+# =========================
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install a tiny static file server
+RUN npm install -g serve
+
+# Copy build output
+COPY --from=builder /app/dist ./dist
+
+# Expose UI port
+EXPOSE 3000
+
+# Serve static files
+CMD ["serve", "-s", "dist", "-l", "3000"]
