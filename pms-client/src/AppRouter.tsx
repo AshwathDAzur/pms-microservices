@@ -3,6 +3,7 @@ import routes from './constant/routes.json';
 import AppLayout from './container/applayout/index';
 import PageNotFound from './container/pagenotfound/index';
 import Home from './container/home/index';
+import Login from './container/login';
 
 function AppRouter() {
     return (
@@ -10,13 +11,16 @@ function AppRouter() {
             <Route
                 path={routes?.HOME}
                 element={
-                    <AppLayout screen={<Home />} />
+                    <AppLayout screen={<Home />} title="Home" />
                 }
             />
-            <Route path="*" element={
-                <AppLayout screen={<PageNotFound />} />
-            }
+            <Route
+                path={routes?.LOGIN}
+                element={
+                    <AppLayout screen={<Login />} title="Login" />
+                }
             />
+            <Route path="*" element={<PageNotFound />} />
         </Routes>
     );
 }
