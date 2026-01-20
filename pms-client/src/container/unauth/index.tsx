@@ -1,5 +1,5 @@
 
-function Login() {
+function UnAuth() {
     const environment : string = import.meta.env.VITE_ENV;
 
     return (
@@ -16,9 +16,9 @@ function Login() {
             }}
             >
             <p>App is running in {environment} environment</p>
-            <p>Login page...</p>
+            <p>UnAuthorized...</p>
         </div>
     );
 }
 
-export default Login;
+export default UnAuth;

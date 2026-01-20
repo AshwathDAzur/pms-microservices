@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------->
+Authentication and Authorization : Keycloak
+
+    - To have the dev-keycloak container for local development.
+    - Should not use the same in production
+    - In the docker run command itself tells it to run in dev
+docker run \
+  -p 127.0.0.1:8080:8080 \
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+  quay.io/keycloak/keycloak:26.5.1 \
+  start-dev
+
+    - By default it'll have a master realm - Its adviced to create realm - not modify master realm
+    - After creating the realm - create a client
+    - Set the redirect uri in the client settings
+-------------------------------------------------------------------------------->
+Integraing keycloak in react
+    - prerequisites : 
+        npm package : https://www.npmjs.com/package/keycloak-js
