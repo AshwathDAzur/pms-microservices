@@ -1,11 +1,5 @@
-import { useState, useEffect, useRef, use } from "react";
-import Keycloak from "keycloak-js";
-
-const keycloak = new Keycloak({
-    url: import.meta.env.VITE_KEYCLOAK_URL,
-    realm: import.meta.env.VITE_KEYCLOAK_REALM,
-    clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID,
-});
+import { useState, useEffect, useRef } from "react";
+import keycloak from "../keycloak";
 
 const useAuth = () => {
 
@@ -18,7 +12,6 @@ const useAuth = () => {
 
     isRun.current = true;
     keycloak.init({ onLoad: 'login-required' }).then((authenticated) => {
-        console.log("Keycloak authenticated:", authenticated);
         setIsAuthenticated(authenticated);
      }).catch((err) => {
         console.error("Keycloak initialization error:", err);
