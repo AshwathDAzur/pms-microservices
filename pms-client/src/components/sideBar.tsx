@@ -1,8 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import routes from "../constant/routes.json";
+import Button from "./button";
 
 function SideBar() {
 
+    const Navigate = useNavigate();
     const { signOut } = useAuth();
+
 
     return (
         <div
@@ -13,27 +18,21 @@ function SideBar() {
                 borderRadius: "12px",
                 border: "1px solid rgba(255,255,255,0.12)",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-around",
             }}
         >   
-            <button
-                style={{
-                    background: "rgba(255, 255, 255, 0.05)",
-                    border: "1px solid rgba(255, 255, 255, 0.12)",
-                    borderRadius: "10px",
-                    padding: "12px 20px",
-                    color: "#e5e7eb",
-                    fontSize: "14px",
-                    fontWeight: "600",
-                    cursor: "pointer",
-                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08)",
-                    backdropFilter: "blur(10px)",
-                    position: "relative",
-                    overflow: "hidden"
-            }}
-            onClick={signOut}>
-                Logout
-            </button>
+            <Button text="Home" onClickFunction={() => {
+                Navigate(routes.HOME);
+            }} />
+            <Button text="Admin" onClickFunction={() => {
+                Navigate(routes.ADMIN);
+            }} />
+            <Button text="Dashboard" onClickFunction={() => {}} />
+            <Button text="Profile" onClickFunction={() => {}} />
+            <Button text="Logout" onClickFunction={signOut} />
         </div>
     );
 }
