@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import employeeRouter from './employee.js';
+import authenticate from './authenticate.js';
 import cors from 'cors';
 
 (async function(){
@@ -17,5 +18,5 @@ import cors from 'cors';
         console.log(`Server is running on port ${port}`);
     });
     app.use(express.json());
-    app.use("/employee", employeeRouter);
+    app.use("/employee", authenticate, employeeRouter);
 })();
