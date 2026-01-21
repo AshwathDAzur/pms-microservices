@@ -15,7 +15,7 @@ docker run \
     - After creating the realm - create a client
     - Set the redirect uri in the client settings
         Valid redirect URIs : http://localhost:2407/*
-        Valid post logout : http://localhost:2407/
+        Valid post logout : http://localhost:2407/*
         Web origins : http://localhost:2407
 -------------------------------------------------------------------------------->
 Integraing keycloak in react
