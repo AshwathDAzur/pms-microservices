@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  pms-client:
+    container_name: pms-client
+    build:
+      context: ./pms-client
+      dockerfile: Dockerfile
+      args:
+        VITE_ENV: ${VITE_ENV}
+        VITE_API_URL: ${VITE_API_URL}
+        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL}
+        VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM}
+        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
+    ports:
+      - "2407:2407"
+    env_file:
+      - .env
+    restart: unless-stopped
