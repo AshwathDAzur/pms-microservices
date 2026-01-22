@@ -26,3 +26,5 @@ Integrate keycloak in node
     - realm settings > keys > RSA256 > public key
     - node package : npm i jsonwebtoken
 -------------------------------------------------------------------------------->
+
+docker compose -f docker-compose.yml up --build
