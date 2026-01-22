@@ -1,0 +1,27 @@
+{
+  "name": "management-service",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn src/server.ts",
+    "start-dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.3",
+    "nodemon": "^3.1.11",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.10",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.4.0"
+  }
+}
