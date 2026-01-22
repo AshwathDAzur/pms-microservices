@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { getAllEmployees } from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 
 function Home() {
-    const environment : string = import.meta.env.VITE_ENV;
+    const { email } = useAuth();
     const [employees, setEmployees] = useState<any>([]);
 
     useEffect(() => {
@@ -15,8 +16,7 @@ function Home() {
 
     return (
         <div>
-            <p>App is running in {environment} environment</p>
-            <p>Home page...</p>
+            {email && <p>Welcome, {email}</p>}
             {
                 employees?.map((employee: any) => (
                     <div key={employee.id}>
