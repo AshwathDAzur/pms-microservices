@@ -8,8 +8,9 @@
 
 body {
     font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    min-height: 100vh;
+    height: 100vh;
     background: #ffffff;
+    overflow: hidden;
 }
 
 /* ========================================
@@ -17,8 +18,9 @@ body {
    ======================================== */
 .pms-login-container {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
     width: 100%;
+    overflow: hidden;
 }
 
 /* ========================================
@@ -26,12 +28,14 @@ body {
    ======================================== */
 .pms-login-left {
     width: 50%;
-    min-height: 100vh;
+    height: 100vh;
     background: #ffffff;
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 2rem 4rem;
     position: relative;
+    overflow-y: auto;
 }
 
 .pms-logo {
@@ -39,7 +43,9 @@ body {
     font-weight: 700;
     color: #1b264d;
     letter-spacing: 0.05em;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 400px;
 }
 
 .pms-form-container {
@@ -47,6 +53,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 100%;
     max-width: 400px;
 }
 
@@ -315,12 +322,14 @@ input::placeholder {
    ======================================== */
 .pms-login-right {
     width: 50%;
-    min-height: 100vh;
+    height: 100vh;
     background: radial-gradient(ellipse at 50% 100%, #1b264d 0%, #000f2b 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
+    position: fixed;
+    top: 0;
+    right: 0;
     overflow: hidden;
 }
 

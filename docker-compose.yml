@@ -1,15 +1,43 @@
 services:
+  keycloak-postgres:
+    container_name: keycloak-postgres
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - keycloak-postgres-data:/var/lib/postgresql/data
+    networks:
+      - pms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   keycloak:
     container_name: keycloak
     image: quay.io/keycloak/keycloak:26.5.1
     command:
-      - start-dev
+      - start
       - --import-realm
       - --health-enabled=true
+      - --hostname-strict=false
+      - --http-enabled=true
     environment:
-      KC_DB: dev-mem
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Database
+      KC_DB: ${KC_DB}
+      KC_DB_URL: ${KC_DB_URL}
+      KC_DB_USERNAME: ${KC_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      # Admin credentials
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      # Hostname
+      KC_HOSTNAME: ${KC_HOSTNAME}
+      KC_PROXY_HEADERS: ${KC_PROXY_HEADERS}
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
       - ./keycloak/themes/pms:/opt/keycloak/themes/pms:ro
@@ -17,13 +45,18 @@ services:
       - "8080:8080"
     networks:
       - pms-network
+    env_file:
+      - .env
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "cat < /dev/null > /dev/tcp/localhost/9000 2>/dev/null"]
-      interval: 5s
-      timeout: 3s
+      interval: 10s
+      timeout: 5s
       retries: 20
-      start_period: 30s
+      start_period: 60s
 
   pms-client:
     container_name: pms-client
@@ -50,3 +83,7 @@ services:
 networks:
   pms-network:
     driver: bridge
+
+volumes:
+  keycloak-postgres-data:
+    external: true
