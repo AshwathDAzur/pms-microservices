@@ -1,6 +1,19 @@
+import {  Request, RequestHandler, Response } from 'express';
 import jwtmod from 'jsonwebtoken';
 
-export default async (req, res, next) => {
+declare global {
+    namespace Express {
+        interface Request {
+            user?: any;
+        }
+    }
+}
+
+const authenticate: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next
+) => {
     const bearerHeader = req.headers['authorization'];
     const token = bearerHeader && bearerHeader.split(' ')[1];
     if (!token) {
@@ -14,7 +27,11 @@ export default async (req, res, next) => {
         req.user = decodedToken;
         next();
     } catch (error) {
-        console.error("Token verification failed:", error.message);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error("Token verification failed:", errorMessage);
         return res.status(401).json({ error: 'Invalid token' });
     }
 };
+
+
+export { authenticate };

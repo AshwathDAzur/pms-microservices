@@ -5,14 +5,28 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# ---- Build-time arguments (from docker-compose)
+ARG VITE_ENV
+ARG VITE_API_URL
+ARG VITE_KEYCLOAK_URL
+ARG VITE_KEYCLOAK_REALM
+ARG VITE_KEYCLOAK_CLIENT_ID
+
+# ---- Expose them to Vite at build time
+ENV VITE_ENV=$VITE_ENV \
+    VITE_API_URL=$VITE_API_URL \
+    VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL \
+    VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM \
+    VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
+
 # Install dependencies (cached layer)
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Copy source
+# Copy source code
 COPY . .
 
-# Build the Vite app
+# Build the Vite app (envs are injected here)
 RUN npm run build
 
 
@@ -23,10 +37,10 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install a tiny static file server
+# Install lightweight static server
 RUN npm install -g serve
 
-# Copy build output
+# Copy built assets only
 COPY --from=builder /app/dist ./dist
 
 # Expose UI port

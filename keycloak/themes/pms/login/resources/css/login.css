@@ -1,0 +1,258 @@
+/* PMS Custom Keycloak Theme - Split Layout */
+
+/* ========================================
+   BASE RESET
+   ======================================== */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* ========================================
+   MAIN LAYOUT
+   ======================================== */
+.pf-c-login {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+}
+
+/* ========================================
+   LEFT SIDE - Form (50%)
+   ======================================== */
+.pf-c-login__container {
+  width: 50vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Logo */
+.pf-c-login__container::before {
+  content: 'PMS';
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1b264d;
+  letter-spacing: 0.05em;
+}
+
+.pf-c-login__main {
+  width: 100%;
+  max-width: 380px;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Hide default header */
+.pf-c-login__header,
+.pf-c-login__main-header {
+  display: none;
+}
+
+/* ========================================
+   RIGHT SIDE - Gradient + SVG (50%)
+   ======================================== */
+.pf-c-login__footer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(ellipse at 50% 100%, #1b264d 0%, #000f2b 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hide footer content */
+.pf-c-login__footer * {
+  display: none;
+}
+
+/* SVG Illustration */
+.pf-c-login__footer::before {
+  content: '';
+  display: block;
+  width: 320px;
+  height: 320px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3C!-- Background glow --%3E%3Cellipse cx='200' cy='320' rx='120' ry='20' fill='%23ffffff' opacity='0.1'/%3E%3C!-- Center person --%3E%3Ccircle cx='200' cy='140' r='50' fill='%233b82f6'/%3E%3Cellipse cx='200' cy='280' rx='70' ry='85' fill='%233b82f6'/%3E%3C!-- Left person --%3E%3Ccircle cx='70' cy='180' r='35' fill='%2360a5fa'/%3E%3Cellipse cx='70' cy='290' rx='50' ry='65' fill='%2360a5fa'/%3E%3C!-- Right person --%3E%3Ccircle cx='330' cy='180' r='35' fill='%2360a5fa'/%3E%3Cellipse cx='330' cy='290' rx='50' ry='65' fill='%2360a5fa'/%3E%3C!-- Connection arcs --%3E%3Cpath d='M120 220 Q160 180 200 200' stroke='%23ffffff' stroke-width='2' fill='none' opacity='0.3'/%3E%3Cpath d='M280 220 Q240 180 200 200' stroke='%23ffffff' stroke-width='2' fill='none' opacity='0.3'/%3E%3C!-- Decorative dots --%3E%3Ccircle cx='140' cy='80' r='8' fill='%23fbbf24'/%3E%3Ccircle cx='270' cy='90' r='6' fill='%2314b8a6'/%3E%3Ccircle cx='310' cy='120' r='5' fill='%23f97316'/%3E%3Ccircle cx='100' cy='110' r='4' fill='%23ec4899'/%3E%3Ccircle cx='50' cy='350' r='6' fill='%23fbbf24'/%3E%3Ccircle cx='350' cy='350' r='5' fill='%2314b8a6'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ========================================
+   FORM STYLING
+   ======================================== */
+.pf-c-login__main-body {
+  padding: 0;
+}
+
+/* Title */
+.pf-c-title {
+  color: #1e293b;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+/* Subtitle */
+.pf-c-login__main-body::before {
+  content: 'Welcome back! Please enter your details.';
+  display: block;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Labels */
+.pf-c-form__label-text {
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Inputs */
+.pf-c-form-control {
+  width: 100%;
+  background: #f8fafc;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #1e293b;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.pf-c-form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  outline: none;
+}
+
+/* Form groups */
+.pf-c-form__group {
+  margin-bottom: 1.25rem;
+}
+
+/* Password toggle */
+.pf-c-button.pf-m-control {
+  background: transparent;
+  border: none;
+  color: #64748b;
+}
+
+/* Remember me */
+.pf-c-check__label {
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+/* Links */
+a {
+  color: #3b82f6;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Primary button */
+.pf-c-button.pf-m-primary {
+  width: 100%;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pf-c-button.pf-m-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Registration link */
+.pf-c-login__main-footer {
+  padding: 0;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.pf-c-login__main-footer-band {
+  text-align: center;
+}
+
+.pf-c-login__main-footer-band-item {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* Alerts */
+.pf-c-alert {
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 900px) {
+  .pf-c-login {
+    flex-direction: column;
+  }
+
+  .pf-c-login__container {
+    width: 100vw;
+    min-height: auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .pf-c-login__container::before {
+    position: relative;
+    top: 0;
+    left: 0;
+    display: block;
+    margin-bottom: 2rem;
+  }
+
+  .pf-c-login__footer {
+    position: relative;
+    width: 100vw;
+    height: 300px;
+  }
+
+  .pf-c-login__footer::before {
+    width: 200px;
+    height: 200px;
+  }
+}
