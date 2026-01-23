@@ -1,0 +1,426 @@
+/* PMS Keycloak Theme - Split Layout */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background: #ffffff;
+}
+
+/* ========================================
+   MAIN CONTAINER - Split Layout
+   ======================================== */
+.pms-login-container {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ========================================
+   LEFT SIDE - Form (50%)
+   ======================================== */
+.pms-login-left {
+    width: 50%;
+    min-height: 100vh;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 4rem;
+    position: relative;
+}
+
+.pms-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1b264d;
+    letter-spacing: 0.05em;
+    margin-bottom: 3rem;
+}
+
+.pms-form-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 400px;
+}
+
+.pms-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.pms-subtitle {
+    color: #64748b;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+/* ========================================
+   FORM ELEMENTS
+   ======================================== */
+#kc-form-login {
+    width: 100%;
+}
+
+.pf-c-form__group,
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+label,
+.pf-c-form__label,
+.control-label {
+    display: block;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+.pf-c-form-control,
+.form-control {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    color: #1e293b;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+.pf-c-form-control:focus,
+.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+input::placeholder {
+    color: #94a3b8;
+}
+
+/* Password input group */
+.pf-c-input-group {
+    position: relative;
+    display: flex;
+}
+
+.pf-c-input-group input {
+    flex: 1;
+    border-radius: 10px;
+}
+
+.pf-c-input-group .pf-c-button {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+/* Checkbox & Options Row */
+#kc-form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.5rem;
+    accent-color: #3b82f6;
+    cursor: pointer;
+}
+
+.checkbox label {
+    font-weight: 400;
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 0;
+    cursor: pointer;
+}
+
+.pf-c-form__settings a,
+#kc-form-options a {
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pf-c-form__settings a:hover,
+#kc-form-options a:hover {
+    text-decoration: underline;
+}
+
+/* Submit Button */
+#kc-login,
+.pf-c-button.pf-m-primary,
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+}
+
+#kc-login:hover,
+.pf-c-button.pf-m-primary:hover,
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(59, 130, 246, 0.45);
+}
+
+#kc-login:active {
+    transform: translateY(0);
+}
+
+/* Registration Link */
+#kc-registration-container,
+#kc-registration {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+#kc-registration span {
+    color: #64748b;
+    font-size: 0.95rem;
+}
+
+#kc-registration a {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+    margin-left: 0.25rem;
+}
+
+#kc-registration a:hover {
+    text-decoration: underline;
+}
+
+/* Social Providers */
+#kc-social-providers {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+#kc-social-providers hr {
+    border: none;
+    border-top: 1px solid #e2e8f0;
+    margin-bottom: 1rem;
+}
+
+#kc-social-providers h4 {
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+}
+
+#kc-social-providers ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+#kc-social-providers a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    color: #334155;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+#kc-social-providers a:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+}
+
+/* Alerts */
+.pms-alert {
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.pms-alert-error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+.pms-alert-success {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.pms-alert-warning {
+    background: #fffbeb;
+    color: #d97706;
+    border: 1px solid #fde68a;
+}
+
+.pms-alert-info {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+
+/* ========================================
+   RIGHT SIDE - Gradient + Illustration (50%)
+   ======================================== */
+.pms-login-right {
+    width: 50%;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% 100%, #1b264d 0%, #000f2b 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.pms-illustration {
+    width: 70%;
+    max-width: 400px;
+}
+
+.pms-illustration svg {
+    width: 100%;
+    height: auto;
+}
+
+/* Decorative floating dots */
+.pms-dots {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+}
+
+.dot {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.dot-1 {
+    width: 12px;
+    height: 12px;
+    background: #fbbf24;
+    top: 15%;
+    left: 20%;
+}
+
+.dot-2 {
+    width: 8px;
+    height: 8px;
+    background: #14b8a6;
+    top: 25%;
+    right: 15%;
+}
+
+.dot-3 {
+    width: 10px;
+    height: 10px;
+    background: #f97316;
+    bottom: 20%;
+    left: 15%;
+}
+
+.dot-4 {
+    width: 6px;
+    height: 6px;
+    background: #ec4899;
+    bottom: 30%;
+    right: 25%;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 1024px) {
+    .pms-login-container {
+        flex-direction: column;
+    }
+
+    .pms-login-left {
+        width: 100%;
+        min-height: auto;
+        padding: 2rem;
+    }
+
+    .pms-login-right {
+        width: 100%;
+        min-height: 300px;
+        order: -1;
+    }
+
+    .pms-illustration {
+        width: 50%;
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pms-login-left {
+        padding: 1.5rem;
+    }
+
+    .pms-title {
+        font-size: 1.5rem;
+    }
+
+    .pms-login-right {
+        min-height: 200px;
+    }
+
+    .pms-illustration {
+        width: 40%;
+    }
+}
