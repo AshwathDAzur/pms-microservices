@@ -1,6 +1,6 @@
 {
   "id": "3fa91e1a-16f2-4a2a-9163-5b2e094ee585",
-  "realm": "peopleManagementSystem",
+  "realm": "projectManagementSystem",
   "displayName": "",
   "displayNameHtml": "PMS",
   "notBefore": 0,
@@ -60,7 +60,7 @@
       },
       {
         "id": "8fe145b6-0f4c-45fd-a042-fd5740cded2d",
-        "name": "default-roles-peoplemanagementsystem",
+        "name": "default-roles-projectmanagementsystem",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -410,7 +410,7 @@
   "groups": [],
   "defaultRole": {
     "id": "8fe145b6-0f4c-45fd-a042-fd5740cded2d",
-    "name": "default-roles-peoplemanagementsystem",
+    "name": "default-roles-projectmanagementsystem",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -485,13 +485,13 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/peopleManagementSystem/account/",
+      "baseUrl": "/realms/projectManagementSystem/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/peopleManagementSystem/account/*"
+        "/realms/projectManagementSystem/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -532,13 +532,13 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/peopleManagementSystem/account/",
+      "baseUrl": "/realms/projectManagementSystem/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/peopleManagementSystem/account/*"
+        "/realms/projectManagementSystem/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -778,13 +778,13 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/peopleManagementSystem/console/",
+      "baseUrl": "/admin/projectManagementSystem/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/admin/peopleManagementSystem/console/*"
+        "/admin/projectManagementSystem/console/*"
       ],
       "webOrigins": [
         "+"
