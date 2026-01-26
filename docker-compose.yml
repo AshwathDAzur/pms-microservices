@@ -58,6 +58,60 @@ services:
       retries: 20
       start_period: 60s
 
+  admin-service:
+    container_name: admin-service
+    build:
+      context: ./pms-server/admin-service
+      dockerfile: Dockerfile
+      args:
+        PORT: ${ADMIN_SERVICE_PORT}
+        ENV: ${ADMIN_SERVICE_ENV}
+        PUBLICKEY: ${ADMIN_SERVICE_PUBLICKEY}
+        LOG_LEVEL: ${ADMIN_SERVICE_LOG_LEVEL}
+    ports:
+      - "${ADMIN_SERVICE_PORT}:${ADMIN_SERVICE_PORT}"
+    networks:
+      - pms-network
+    env_file:
+      - .env
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${ADMIN_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  management-service:
+    container_name: management-service
+    build:
+      context: ./pms-server/management-service
+      dockerfile: Dockerfile
+      args:
+        PORT: ${MANAGEMENT_SERVICE_PORT}
+        ENV: ${MANAGEMENT_SERVICE_ENV}
+        PUBLICKEY: ${MANAGEMENT_SERVICE_PUBLICKEY}
+        LOG_LEVEL: ${MANAGEMENT_SERVICE_LOG_LEVEL}
+    ports:
+      - "${MANAGEMENT_SERVICE_PORT}:${MANAGEMENT_SERVICE_PORT}"
+    networks:
+      - pms-network
+    env_file:
+      - .env
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${MANAGEMENT_SERVICE_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
   pms-client:
     container_name: pms-client
     build:
@@ -77,6 +131,10 @@ services:
       - .env
     depends_on:
       keycloak:
+        condition: service_healthy
+      admin-service:
+        condition: service_healthy
+      management-service:
         condition: service_healthy
     restart: unless-stopped
 
