@@ -18,7 +18,7 @@ function AppRouter() {
                     element={<AppLayout screen={<Home />} title="Home" />}
                 />
             </Route>
-            <Route element={<ProtectedRoute  requiredRoles={["default-roles-peoplemanagementsystem"]}/>}>
+            <Route element={<ProtectedRoute  requiredRoles={["default-roles-projectmanagementsystem"]}/>}>
                 <Route
                     path={routes?.ADMIN}
                     element={<AppLayout screen={<Admin />} title="Admin" />}

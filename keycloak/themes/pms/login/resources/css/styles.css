@@ -433,3 +433,101 @@ input::placeholder {
         width: 40%;
     }
 }
+
+/* ========================================
+   REGISTRATION PAGE STYLES
+   ======================================== */
+
+/* Password wrapper with toggle button */
+.pms-password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.pms-password-wrapper input {
+    width: 100%;
+    padding-right: 3rem;
+}
+
+.pms-password-toggle {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.pms-password-toggle:hover {
+    color: #3b82f6;
+}
+
+.pms-password-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Required field indicator */
+.pms-required {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+/* Error message styling */
+.pms-error-message {
+    display: block;
+    color: #dc2626;
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+}
+
+/* Back to login link */
+.pms-back-to-login {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.pms-back-to-login a {
+    color: #3b82f6;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pms-back-to-login a:hover {
+    text-decoration: underline;
+}
+
+/* Register form submit button */
+#kc-register-form input[type="submit"] {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.35);
+    margin-top: 0.5rem;
+}
+
+#kc-register-form input[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(59, 130, 246, 0.45);
+}
+
+#kc-register-form input[type="submit"]:active {
+    transform: translateY(0);
+}

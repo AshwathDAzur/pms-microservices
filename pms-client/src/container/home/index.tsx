@@ -19,8 +19,8 @@ function Home() {
             {email && <p>Welcome, {email}</p>}
             {
                 employees?.map((employee: any) => (
-                    <div key={employee.id}>
-                        <h3>{employee.Name}</h3>
+                    <div>
+                        <h3>{employee.Admin}</h3>
                     </div>
                 ))
             }

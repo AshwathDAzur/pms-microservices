@@ -10,10 +10,10 @@ const getUser: RequestHandler = async (
     //     return;
     // }
     try {
-        const data = {
+        const data = [{
             "Admin":"Ashwath", 
             "info": req.user
-        };
+        }];
         res.json(data);
     } catch (error: any) {
         next();
