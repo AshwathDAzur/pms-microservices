@@ -683,10 +683,10 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:2407/*"
+        "http://localhost/*"
       ],
       "webOrigins": [
-        "http://localhost:2407"
+        "http://localhost"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -706,7 +706,7 @@
         "standard.token.exchange.enabled": "false",
         "oauth2.jwt.authorization.grant.enabled": "false",
         "frontchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:2407/*",
+        "post.logout.redirect.uris": "http://localhost/*",
         "oauth2.device.authorization.grant.enabled": "false",
         "display.on.consent.screen": "false",
         "backchannel.logout.revoke.offline.tokens": "false",

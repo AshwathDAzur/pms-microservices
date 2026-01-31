@@ -1,4 +1,34 @@
 services:
+  # ──────────────────────────────────────────────
+  # Nginx - Reverse Proxy & Load Balancer
+  # ──────────────────────────────────────────────
+  nginx:
+    container_name: nginx
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - nginx-logs:/var/log/nginx
+    ports:
+      - "80:80"
+    networks:
+      - pms-network
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      admin-service:
+        condition: service_healthy
+      management-service:
+        condition: service_healthy
+      pms-client:
+        condition: service_started
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/nginx-health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
   keycloak-postgres:
     container_name: keycloak-postgres
     image: postgres:16-alpine
@@ -24,7 +54,6 @@ services:
       - start
       - --import-realm
       - --health-enabled=true
-      - --hostname-strict=false
       - --http-enabled=true
     environment:
       # Database
@@ -35,14 +64,14 @@ services:
       # Admin credentials
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      # Hostname
-      KC_HOSTNAME: ${KC_HOSTNAME}
-      KC_PROXY_HEADERS: ${KC_PROXY_HEADERS}
+      # Proxy - tells Keycloak it's behind a reverse proxy
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME: http://localhost
+      KC_HOSTNAME_STRICT: "false"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
       - ./keycloak/themes/pms:/opt/keycloak/themes/pms:ro
-    ports:
-      - "8080:8080"
+    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
@@ -68,8 +97,7 @@ services:
         ENV: ${ADMIN_SERVICE_ENV}
         PUBLICKEY: ${ADMIN_SERVICE_PUBLICKEY}
         LOG_LEVEL: ${ADMIN_SERVICE_LOG_LEVEL}
-    ports:
-      - "${ADMIN_SERVICE_PORT}:${ADMIN_SERVICE_PORT}"
+    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
@@ -95,8 +123,7 @@ services:
         ENV: ${MANAGEMENT_SERVICE_ENV}
         PUBLICKEY: ${MANAGEMENT_SERVICE_PUBLICKEY}
         LOG_LEVEL: ${MANAGEMENT_SERVICE_LOG_LEVEL}
-    ports:
-      - "${MANAGEMENT_SERVICE_PORT}:${MANAGEMENT_SERVICE_PORT}"
+    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
@@ -123,8 +150,7 @@ services:
         VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
-    ports:
-      - "2407:2407"
+    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
@@ -145,3 +171,4 @@ networks:
 volumes:
   keycloak-postgres-data:
     external: true
+  nginx-logs:
