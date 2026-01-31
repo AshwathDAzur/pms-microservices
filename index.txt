@@ -33,3 +33,12 @@ docker compose -f docker-compose.yml up --build
 docker-compose build --no-cache
 docker-compose up
 -------------------------------------------------------------------------------->
+
+Reverse Proxy
+URL	Destination
+http://localhost/	React app (Home)
+http://localhost/admin	React app (Admin page)
+http://localhost/api/admin/*	admin-service backend
+http://localhost/api/management/*	management-service backend
+http://localhost/realms/*	Keycloak (OIDC/login)
+http://localhost/admin/master/console/	Keycloak admin console

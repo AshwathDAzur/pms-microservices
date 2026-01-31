@@ -19,7 +19,7 @@ app.use(
 
 app.use("/health", healthRoute);
 
-// app.use(authenticate);
+app.use(authenticate);
 if (process.env['ENV'] === 'development') {
       logger.info(`Running in dev mode`);
 }
