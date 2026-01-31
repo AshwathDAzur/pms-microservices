@@ -9,9 +9,8 @@ function AppLayout({screen, title} : {screen: JSX.Element, title?: string}) {
         flexDirection: "row",
         height: "100vh",
         width: "100vw",
-        padding: "5px",
-        justifyContent: "center",
-        alignItems: "center",
+        padding: "0.4rem",
+        gap: "0.4rem",
       }}
     >
       <SideBar />
@@ -19,10 +18,11 @@ function AppLayout({screen, title} : {screen: JSX.Element, title?: string}) {
         style={{
           display: "flex",
           flexDirection: "column",
-          width: "95%",
+          flex: 1,
+          minWidth: 0,
           height: "100%",
-          padding: "5px",
-          // border: "1px solid #1b264d",
+          padding: "0.5rem",
+          overflow: "auto",
         }}
       >
         {title && <h2>{title} Page</h2>}
