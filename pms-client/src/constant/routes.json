@@ -1,6 +1,7 @@
 {
 	"HOME": "/",
 	"ADMIN": "/admin",
+	"DASHBOARD": "/dashboard",
 	"UNAUTHORIZED": "/unauthorized",
 	"FORBIDDEN": "/forbidden"
 }

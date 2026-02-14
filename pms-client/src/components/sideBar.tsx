@@ -10,9 +10,10 @@ function SideBar() {
 
 
     return (
-        <div
+        <nav
             style={{
-                width: "6%",
+                width: "5rem",
+                flexShrink: 0,
                 height: "100%",
                 background:"linear-gradient(180deg, #0f172a 0%, #111827 100%)",
                 borderRadius: "12px",
@@ -21,19 +22,23 @@ function SideBar() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-around",
+                justifyContent: "space-between",
+                padding: "1.2rem 0",
             }}
-        >   
-            <Button text="Home" onClickFunction={() => {
-                Navigate(routes.HOME);
-            }} />
-            <Button text="Admin" onClickFunction={() => {
-                Navigate(routes.ADMIN);
-            }} />
-            <Button text="Dashboard" onClickFunction={() => {}} />
-            <Button text="Profile" onClickFunction={() => {}} />
+        >
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.6rem", width: "100%" }}>
+                <Button text="Home" onClickFunction={() => {
+                    Navigate(routes.HOME);
+                }} />
+                <Button text="Admin" onClickFunction={() => {
+                    Navigate(routes.ADMIN);
+                }} />
+                <Button text="Insights" onClickFunction={() => {
+                    Navigate(routes.DASHBOARD);
+                }} />
+            </div>
             <Button text="Logout" onClickFunction={signOut} />
-        </div>
+        </nav>
     );
 }
 

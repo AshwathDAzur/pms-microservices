@@ -57,7 +57,6 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       # Proxy - tells Keycloak it's behind a reverse proxy
       KC_PROXY_HEADERS: xforwarded
-      KC_HOSTNAME: http://localhost
       KC_HOSTNAME_STRICT: "false"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
