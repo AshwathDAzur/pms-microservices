@@ -1,15 +1,12 @@
 import express from 'express';
-import controller from './adminController';
+import { getEmployees, getEmployee, createEmployee, updateEmployee, deleteEmployee } from './adminController';
 
 const adminRouter = express.Router();
 
-adminRouter
-    .route('/')
-    .get(controller.getUser)
-    .all((req, res, next) => {
-        next();
-    });
-
-
+adminRouter.get('/', getEmployees);
+adminRouter.get('/:id', getEmployee);
+adminRouter.post('/', createEmployee);
+adminRouter.put('/:id', updateEmployee);
+adminRouter.delete('/:id', deleteEmployee);
 
 export default adminRouter;

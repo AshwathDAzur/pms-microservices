@@ -13,8 +13,15 @@ services:
     networks:
       - pms-network
     restart: unless-stopped
+    depends_on:
+      pms-client:
+        condition: service_started
+      admin-service:
+        condition: service_healthy
+      management-service:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/nginx-health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/nginx-health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -47,22 +54,19 @@ services:
       - --health-enabled=true
       - --http-enabled=true
     environment:
-      # Database
       KC_DB: ${KC_DB}
       KC_DB_URL: ${KC_DB_URL}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      # Admin credentials
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      # Proxy - tells Keycloak it's behind a reverse proxy
       KC_PROXY_HEADERS: xforwarded
       KC_HOSTNAME_STRICT: "false"
     volumes:
       - ./keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
       - ./keycloak/themes/pms:/opt/keycloak/themes/pms:ro
     ports:
-      - "8080:8080"  # Exposed for local dev (npm run dev on :2407)
+      - "8080:8080"
     networks:
       - pms-network
     env_file:
@@ -78,6 +82,30 @@ services:
       retries: 20
       start_period: 60s
 
+  # ──────────────────────────────────────────────
+  # MySQL - Shared business data store
+  # ──────────────────────────────────────────────
+  pms-mysql:
+    container_name: pms-mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: pms_db
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - pms-mysql-data:/var/lib/mysql
+      - ./mysql/seed.sql:/docker-entrypoint-initdb.d/seed.sql:ro
+    networks:
+      - pms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   admin-service:
     container_name: admin-service
     build:
@@ -88,13 +116,14 @@ services:
         ENV: ${ADMIN_SERVICE_ENV}
         PUBLICKEY: ${ADMIN_SERVICE_PUBLICKEY}
         LOG_LEVEL: ${ADMIN_SERVICE_LOG_LEVEL}
-    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
       - .env
     depends_on:
       keycloak:
+        condition: service_healthy
+      pms-mysql:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
@@ -114,13 +143,14 @@ services:
         ENV: ${MANAGEMENT_SERVICE_ENV}
         PUBLICKEY: ${MANAGEMENT_SERVICE_PUBLICKEY}
         LOG_LEVEL: ${MANAGEMENT_SERVICE_LOG_LEVEL}
-    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
       - .env
     depends_on:
       keycloak:
+        condition: service_healthy
+      pms-mysql:
         condition: service_healthy
     restart: unless-stopped
     healthcheck:
@@ -141,7 +171,6 @@ services:
         VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL}
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
-    # No ports exposed - accessed through Nginx
     networks:
       - pms-network
     env_file:
@@ -162,4 +191,5 @@ networks:
 volumes:
   keycloak-postgres-data:
     external: true
+  pms-mysql-data:
   nginx-logs:

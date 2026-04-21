@@ -1,10 +1,13 @@
 import dotenv from 'dotenv';
-import app  from "./app";
-import { logger } from "./logger/logger";
+import app from './app';
+import { logger } from './logger/logger';
+import { connectDB } from './config/db';
 
 dotenv.config();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env['PORT'] || 3000;
 
-app.listen(PORT, () => {
-  logger.info(`management-service running on port ${PORT}`);
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        logger.info(`management-service running on port ${PORT}`);
+    });
 });
