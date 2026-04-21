@@ -1,15 +1,12 @@
 import express from 'express';
-import controller from './managementController';
+import { getProjects, getProject, createProject, updateProject, deleteProject } from './managementController';
 
 const managementRouter = express.Router();
 
-managementRouter
-    .route('/')
-    .get(controller.getUser)
-    .all((req, res, next) => {
-        next();
-    });
-
-
+managementRouter.get('/', getProjects);
+managementRouter.get('/:id', getProject);
+managementRouter.post('/', createProject);
+managementRouter.put('/:id', updateProject);
+managementRouter.delete('/:id', deleteProject);
 
 export default managementRouter;
