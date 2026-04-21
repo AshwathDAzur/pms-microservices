@@ -1,0 +1,33 @@
+# ─────────────────────────────────────────────────────────────
+# Ingress — routes external traffic to the nginx Service
+# Requires an Ingress controller installed in the cluster
+# (nginx-ingress, AWS ALB Ingress, Traefik, etc.)
+#
+# For nginx-ingress controller:
+#   kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.10.1/deploy/static/provider/cloud/deploy.yaml
+#
+# Replace host value with your actual domain or use
+# nip.io for quick testing: <LoadBalancer-IP>.nip.io
+# ─────────────────────────────────────────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pms-ingress
+  namespace: pms
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "60"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: pms.example.com   # ← replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nginx
+                port:
+                  number: 80
