@@ -1,0 +1,30 @@
+# ─────────────────────────────────────────────────────────────
+# PersistentVolumeClaims
+# Uses the cluster's default StorageClass (works on EKS, GKE,
+# AKS, DigitalOcean, and any cluster with a default provisioner)
+# ─────────────────────────────────────────────────────────────
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: keycloak-postgres-pvc
+  namespace: pms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: pms
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

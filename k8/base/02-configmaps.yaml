@@ -1,0 +1,218 @@
+# ─────────────────────────────────────────────────────────────
+# Nginx ConfigMap
+# ─────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: pms
+data:
+  nginx.conf: |
+    worker_processes auto;
+    error_log /var/log/nginx/error.log warn;
+    pid /var/run/nginx.pid;
+
+    events {
+        worker_connections 1024;
+        multi_accept on;
+    }
+
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                        '$status $body_bytes_sent "$http_referer" '
+                        '"$http_user_agent" rt=$request_time '
+                        'uct=$upstream_connect_time urt=$upstream_response_time';
+
+        access_log /var/log/nginx/access.log main;
+
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types text/plain text/css text/xml application/json
+                   application/javascript application/xml text/javascript;
+
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+        limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+        limit_req_zone $binary_remote_addr zone=login_limit:10m rate=5r/s;
+
+        # In Kubernetes, DNS is handled by CoreDNS (kube-dns)
+        resolver kube-dns.kube-system.svc.cluster.local valid=10s ipv6=off;
+
+        upstream admin_service {
+            least_conn;
+            server admin-service.pms.svc.cluster.local:5000 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+
+        upstream management_service {
+            least_conn;
+            server management-service.pms.svc.cluster.local:5001 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+
+        upstream keycloak_server {
+            server keycloak.pms.svc.cluster.local:8080 max_fails=3 fail_timeout=30s;
+            keepalive 16;
+        }
+
+        upstream frontend {
+            server pms-client.pms.svc.cluster.local:2407;
+            keepalive 16;
+        }
+
+        server {
+            listen 80;
+            listen [::]:80;
+            server_name _;
+
+            client_max_body_size 10M;
+
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $host;
+            proxy_set_header X-Forwarded-Port $server_port;
+            proxy_set_header Connection "";
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+
+            location /api/admin/ {
+                limit_req zone=api_limit burst=20 nodelay;
+                rewrite ^/api(.*)$ $1 break;
+                proxy_pass http://admin_service;
+                proxy_buffering on;
+                proxy_buffer_size 128k;
+                proxy_buffers 4 256k;
+            }
+
+            location = /api/admin/health {
+                proxy_pass http://admin_service/health;
+            }
+
+            location /api/management/ {
+                limit_req zone=api_limit burst=20 nodelay;
+                rewrite ^/api(.*)$ $1 break;
+                proxy_pass http://management_service;
+                proxy_buffering on;
+                proxy_buffer_size 128k;
+                proxy_buffers 4 256k;
+            }
+
+            location = /api/management/health {
+                proxy_pass http://management_service/health;
+            }
+
+            location /realms/ {
+                proxy_pass http://keycloak_server;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_buffer_size 128k;
+                proxy_buffers 4 256k;
+                proxy_busy_buffers_size 256k;
+            }
+
+            location ~ ^/admin/.+ {
+                proxy_pass http://keycloak_server;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header X-Forwarded-Host $host;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection "upgrade";
+                proxy_buffer_size 128k;
+                proxy_buffers 4 256k;
+                proxy_busy_buffers_size 256k;
+            }
+
+            location /resources/ {
+                proxy_pass http://keycloak_server;
+                expires 7d;
+                add_header Cache-Control "public, immutable";
+            }
+
+            location /js/ {
+                proxy_pass http://keycloak_server;
+                expires 7d;
+                add_header Cache-Control "public, immutable";
+            }
+
+            location / {
+                proxy_pass http://frontend;
+                proxy_cache_bypass $http_upgrade;
+            }
+
+            location /nginx-health {
+                access_log off;
+                return 200 "healthy\n";
+                add_header Content-Type text/plain;
+            }
+
+            error_page 502 503 504 /50x.html;
+            location = /50x.html {
+                root /usr/share/nginx/html;
+                internal;
+            }
+        }
+    }
+
+---
+# MySQL seed SQL
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-seed
+  namespace: pms
+data:
+  seed.sql: |
+    CREATE DATABASE IF NOT EXISTS pms_db;
+    USE pms_db;
+
+    CREATE TABLE IF NOT EXISTS employees (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        email VARCHAR(150) NOT NULL UNIQUE,
+        role VARCHAR(100) NOT NULL,
+        department VARCHAR(100) NOT NULL,
+        status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS projects (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(150) NOT NULL,
+        description TEXT,
+        status ENUM('active', 'on-hold', 'completed') NOT NULL DEFAULT 'active',
+        assigned_to VARCHAR(150),
+        deadline DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+    INSERT IGNORE INTO employees (name, email, role, department, status) VALUES
+    ('Ashwath Kumaran', 'ashwath.kumaran@psiog.com', 'Engineering Manager', 'Engineering', 'active'),
+    ('Priya Sharma', 'priya.sharma@psiog.com', 'Senior Developer', 'Engineering', 'active'),
+    ('Rahul Mehta', 'rahul.mehta@psiog.com', 'QA Engineer', 'Quality Assurance', 'active'),
+    ('Divya Nair', 'divya.nair@psiog.com', 'UI/UX Designer', 'Design', 'active'),
+    ('Karthik Raj', 'karthik.raj@psiog.com', 'DevOps Engineer', 'Infrastructure', 'inactive');
+
+    INSERT IGNORE INTO projects (name, description, status, assigned_to, deadline) VALUES
+    ('PMS Microservices', 'Project Management System built with microservices architecture', 'active', 'ashwath.kumaran@psiog.com', '2026-12-31'),
+    ('Auth Module Upgrade', 'Upgrade Keycloak from 24 to 26 and migrate realm config', 'completed', 'priya.sharma@psiog.com', '2026-03-15'),
+    ('CI/CD Pipeline', 'Set up GitHub Actions pipeline for all microservices', 'on-hold', 'karthik.raj@psiog.com', '2026-06-30'),
+    ('Mobile App MVP', 'React Native mobile app for project tracking', 'active', 'divya.nair@psiog.com', '2026-09-01'),
+    ('Load Testing Suite', 'Implement k6 load tests for all API endpoints', 'on-hold', 'rahul.mehta@psiog.com', '2026-07-15');
