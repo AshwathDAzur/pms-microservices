@@ -1,38 +1,30 @@
 import axios from 'axios';
-import keycloak from '../keycloak';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const BFF_URL = import.meta.env.VITE_API_URL as string; // /bff
 
 const Client = axios.create({
-    baseURL: API_URL,
+    baseURL: BFF_URL,
     headers: {
-        'Content-type': 'application/json'
-    }
+        'Content-type': 'application/json',
+    },
+    // withCredentials sends the HttpOnly pms_session cookie on every request.
+    // The BFF reads it, looks up Redis, and adds the Bearer token before
+    // forwarding to the backend service — the token never reaches the browser.
+    withCredentials: true,
 });
 
-Client.interceptors.request.use(
-    async config => {
-        // Ensure token is fresh (refresh if needed)
-        if (keycloak.authenticated) {
-            await keycloak.updateToken(30); // refresh if expires in 30s
-            config.headers.Authorization = `Bearer ${keycloak.token}`;
-        }
-        return config;
-    },
-    error => {
-        return Promise.reject(error);
-    }
-);
-
 Client.interceptors.response.use(
-    // unwrap response data
     ({ data }) => data,
-    // catch statusCode != 200 responses and format error
-    error => {
+    (error) => {
+        if (error?.response?.status === 401) {
+            // Session expired — BFF will redirect to Keycloak on next /session poll
+            window.location.href = `${BFF_URL}/login`;
+            return new Promise(() => {}); // hang the promise; redirect is in flight
+        }
         if (error?.response) {
             const errorData = {
                 ...error.response.data,
-                status: error.response.status
+                status: error.response.status,
             };
             return Promise.reject(errorData);
         }

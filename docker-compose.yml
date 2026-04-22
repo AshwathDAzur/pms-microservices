@@ -1,5 +1,48 @@
 services:
   # ──────────────────────────────────────────────
+  # Redis - BFF session store
+  # ──────────────────────────────────────────────
+  pms-redis:
+    container_name: pms-redis
+    image: redis:7-alpine
+    command: redis-server --save "" --appendonly no
+    networks:
+      - pms-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ──────────────────────────────────────────────
+  # BFF Service - Backend For Frontend
+  # ──────────────────────────────────────────────
+  bff-service:
+    container_name: bff-service
+    build:
+      context: ./pms-server/bff-service
+      dockerfile: Dockerfile
+      args:
+        PORT: ${BFF_SERVICE_PORT}
+    networks:
+      - pms-network
+    env_file:
+      - .env
+    depends_on:
+      pms-redis:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${BFF_SERVICE_PORT}/bff/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ──────────────────────────────────────────────
   # Nginx - Reverse Proxy & Load Balancer
   # ──────────────────────────────────────────────
   nginx:
@@ -16,6 +59,8 @@ services:
     depends_on:
       pms-client:
         condition: service_started
+      bff-service:
+        condition: service_healthy
       admin-service:
         condition: service_healthy
       management-service:
@@ -168,15 +213,14 @@ services:
       args:
         VITE_ENV: ${VITE_ENV}
         VITE_API_URL: ${VITE_API_URL}
-        VITE_KEYCLOAK_URL: ${VITE_KEYCLOAK_URL}
-        VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM}
-        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID}
     networks:
       - pms-network
     env_file:
       - .env
     depends_on:
       keycloak:
+        condition: service_healthy
+      bff-service:
         condition: service_healthy
       admin-service:
         condition: service_healthy

@@ -1,12 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import keycloak from "../keycloak";
 
 type AuthContextType = {
   isAuthenticated: boolean;
   isLoading: boolean;
   roles: string[];
   email: string | null;
-  signOut: () => void;
+  signOut: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -14,50 +13,51 @@ const AuthContext = createContext<AuthContextType>({
   isLoading: true,
   roles: [],
   email: null,
-  signOut: () => {}
+  signOut: async () => {},
 });
+
+const BFF_URL = import.meta.env.VITE_API_URL as string; // /bff
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [roles, setRoles] = useState<string[]>([]);
   const [email, setEmail] = useState<string | null>(null);
-  const isRun = useRef(false);
-
-  const signOut = () => {
-        keycloak.logout({
-            redirectUri: window.location.origin
-        });
-    };
-
+  const ran = useRef(false);
 
   useEffect(() => {
-    if (isRun.current) return;
-    isRun.current = true;
+    if (ran.current) return;
+    ran.current = true;
 
-    keycloak
-      .init({
-        onLoad: "login-required"
-        // pkceMethod: "S256",
-        // checkLoginIframe: false,
-      })
-      .then((authenticated) => {
-        setIsAuthenticated(authenticated);
-
-        if (authenticated && keycloak.tokenParsed) {
-          const realmRoles = keycloak.tokenParsed.realm_access?.roles ?? [];
-          const email = keycloak.tokenParsed?.email ?? null;
-          setRoles(realmRoles);
-          setEmail(email);
+    // Ask the BFF if there is an active session.
+    // The BFF reads the HttpOnly cookie — JS never touches the token.
+    fetch(`${BFF_URL}/session`, { credentials: "include" })
+      .then((r) => r.json())
+      .then((data: { isAuthenticated: boolean; email?: string; roles?: string[] }) => {
+        if (data.isAuthenticated) {
+          setIsAuthenticated(true);
+          setEmail(data.email ?? null);
+          setRoles(data.roles ?? []);
+        } else {
+          // No active session — redirect to BFF login which kicks off OIDC
+          window.location.href = `${BFF_URL}/login`;
         }
-
-        setIsLoading(false);
       })
       .catch(() => {
-        setIsAuthenticated(false);
-        setIsLoading(false);
-      });
+        // BFF unreachable — redirect to login
+        window.location.href = `${BFF_URL}/login`;
+      })
+      .finally(() => setIsLoading(false));
   }, []);
+
+  const signOut = async () => {
+    await fetch(`${BFF_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+    // After BFF clears the session and cookie, redirect to login
+    window.location.href = `${BFF_URL}/login`;
+  };
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, isLoading, roles, email, signOut }}>

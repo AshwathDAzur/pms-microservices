@@ -1,13 +1,13 @@
 import api from './client';
 
-// ── Employee API (admin-service) ──────────────────────────────
+// ── Employee API → BFF → admin-service ───────────────────────
 export const getEmployees = () => api.get('/admin');
 export const getEmployee = (id: number) => api.get(`/admin/${id}`);
 export const createEmployee = (data: EmployeePayload) => api.post('/admin', data);
 export const updateEmployee = (id: number, data: Partial<EmployeePayload>) => api.put(`/admin/${id}`, data);
 export const deleteEmployee = (id: number) => api.delete(`/admin/${id}`);
 
-// ── Project API (management-service) ─────────────────────────
+// ── Project API → BFF → management-service ───────────────────
 export const getProjects = () => api.get('/management');
 export const getProject = (id: number) => api.get(`/management/${id}`);
 export const createProject = (data: ProjectPayload) => api.post('/management', data);
