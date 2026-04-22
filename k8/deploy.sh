@@ -85,6 +85,7 @@ if [[ "$BUILD" == "true" ]]; then
   services=(
     "pms-admin-service:$ROOT_DIR/pms-server/admin-service"
     "pms-management-service:$ROOT_DIR/pms-server/management-service"
+    "pms-bff-service:$ROOT_DIR/pms-server/bff-service"
     "pms-client:$ROOT_DIR/pms-client"
   )
 
@@ -101,27 +102,30 @@ if [[ "$BUILD" == "true" ]]; then
   done
 fi
 
-# ── Encode the Keycloak public key into Secrets ───────────────────────────────
-PUBLICKEY_FILE="$ROOT_DIR/.env"
-if [[ -f "$PUBLICKEY_FILE" ]]; then
-  ADMIN_PK=$(grep '^ADMIN_SERVICE_PUBLICKEY=' "$PUBLICKEY_FILE" | cut -d'=' -f2-)
-  MGMT_PK=$(grep '^MANAGEMENT_SERVICE_PUBLICKEY=' "$PUBLICKEY_FILE" | cut -d'=' -f2-)
+# ── Encode secrets from .env into Secrets manifest ───────────────────────────
+ENVFILE="$ROOT_DIR/.env"
+if [[ -f "$ENVFILE" ]]; then
+  ADMIN_PK=$(grep '^ADMIN_SERVICE_PUBLICKEY=' "$ENVFILE" | cut -d'=' -f2-)
+  MGMT_PK=$(grep '^MANAGEMENT_SERVICE_PUBLICKEY=' "$ENVFILE" | cut -d'=' -f2-)
+  BFF_SECRET=$(grep '^KEYCLOAK_CLIENT_SECRET=' "$ENVFILE" | cut -d'=' -f2-)
 
   if [[ -n "$ADMIN_PK" && -n "$MGMT_PK" ]]; then
-    info "Injecting public keys from .env into secrets..."
+    info "Injecting secrets from .env into k8s Secrets..."
     ADMIN_PK_B64=$(echo -n "$ADMIN_PK" | base64 | tr -d '\n')
     MGMT_PK_B64=$(echo -n "$MGMT_PK" | base64 | tr -d '\n')
+    BFF_SECRET_B64=$(echo -n "${BFF_SECRET:-changeme}" | base64 | tr -d '\n')
 
-    # Patch the secrets YAML in-place (temp file) before applying
+    # Patch all three placeholders in one pass
     sed "s|REPLACE_WITH_BASE64_ENCODED_PUBLICKEY|$ADMIN_PK_B64|1" \
         "$MANIFESTS_DIR/01-secrets.yaml" | \
-    sed "s|REPLACE_WITH_BASE64_ENCODED_PUBLICKEY|$MGMT_PK_B64|1" \
+    sed "s|REPLACE_WITH_BASE64_ENCODED_PUBLICKEY|$MGMT_PK_B64|1" | \
+    sed "s|REPLACE_WITH_BASE64_ENCODED_CLIENT_SECRET|$BFF_SECRET_B64|1" \
         > /tmp/pms-secrets-patched.yaml
 
     SECRETS_FILE="/tmp/pms-secrets-patched.yaml"
-    success "Public keys encoded and ready."
+    success "Secrets encoded and ready."
   else
-    warn "Could not extract public keys from .env — skipping key injection."
+    warn "Could not extract public keys from .env — skipping secret injection."
     SECRETS_FILE="$MANIFESTS_DIR/01-secrets.yaml"
   fi
 else
@@ -153,6 +157,7 @@ if [[ -n "$REGISTRY" ]]; then
     sed \
       -e "s|REGISTRY/pms-admin-service:TAG|$REGISTRY/pms-admin-service:$TAG|g" \
       -e "s|REGISTRY/pms-management-service:TAG|$REGISTRY/pms-management-service:$TAG|g" \
+      -e "s|REGISTRY/pms-bff-service:TAG|$REGISTRY/pms-bff-service:$TAG|g" \
       -e "s|REGISTRY/pms-client:TAG|$REGISTRY/pms-client:$TAG|g" \
       "$f" > "$PATCHED_DIR/$filename"
   done
@@ -189,9 +194,11 @@ if [[ "$DRY_RUN" == "false" ]]; then
   deployments=(
     keycloak-postgres
     pms-mysql
+    pms-redis
     keycloak
     admin-service
     management-service
+    bff-service
     pms-client
     nginx
   )
